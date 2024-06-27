@@ -7,17 +7,23 @@ import (
 )
 
 // Store provides all function to execute ab queries and transactions
-type Store struct {
-	*Queries
-	db *sql.DB
+type Store interface {
+	Querier
+	TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error)
 }
 
-func NewStore(db *sql.DB) *Store {
-	return &Store{db: db, Queries: New(db)}
+// SQLStore provides all function to execute ab queries and transactions
+type SQLStore struct {
+	*Queries
+	db *sql.DB
+} 
+
+func NewStore(db *sql.DB) Store {
+	return &SQLStore{db: db, Queries: New(db)}
 }
 
 // ExecTx executes a function within a database transaction
-func (store *Store) ExecTx(ctx context.Context, fn func(*Queries) error) error{
+func (store *SQLStore) ExecTx(ctx context.Context, fn func(*Queries) error) error{
 	tx, err := store.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -49,7 +55,7 @@ type TransferTxResult struct {
 
 // TransferTx performs a money transfer from one account to the other
 // It creates a transfer record in the database
-func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) {
+func (store *SQLStore) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) {
 	var result TransferTxResult
 	err := store.ExecTx(ctx, func(q *Queries) error {
 		var err error
@@ -62,7 +68,6 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 		if err != nil {
 			return err
 		}
-		// fmt.Println(txName, "creating entry 1")
 
 		result.FromEntry, err = q.CreateEntry(ctx, CreateEntryParams{
 			AccountID: arg.FromAccountID,
