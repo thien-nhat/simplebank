@@ -12,6 +12,7 @@ import (
 	"github.com/thien-nhat/simplebank/token"
 )
 
+// Generate token and set in the Authorization header of the provided HTTP request
 func addAuthorization(t *testing.T, request *http.Request, tokenMaker token.TokenMaker, authorizationType,username string, duration time.Duration) {
 	token, err := tokenMaker.CreateToken(username, duration)
 	require.NoError(t, err)
