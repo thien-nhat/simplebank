@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package test;
-
-option go_package = "github.com/thien-nhat/simplebank/pb";
-
-message TestMessage {
-    string message = 1;
-}
