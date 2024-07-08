@@ -14,8 +14,9 @@ COPY app.env .
 COPY start.sh .
 RUN chmod +x start.sh
 
-COPY db/migration ./migration
+COPY db/migration ./db/migration
 
 EXPOSE 8080
+EXPOSE 9090
 CMD ["/app/main"]
 ENTRYPOINT [ "/app/start.sh" ]
