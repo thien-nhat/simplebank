@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/hibiken/asynq"
+	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog/log"
 	db "github.com/thien-nhat/simplebank/db/sqlc"
 	"github.com/thien-nhat/simplebank/mail"
@@ -26,6 +27,9 @@ type RedisTaskProcessor struct {
 }
 
 func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store, mailer mail.EmailSender) TaskProcessor {
+	logger := NewLogger()
+	redis.SetLogger(logger)
+
 	server := asynq.NewServer(
 		redisOpt,
 		asynq.Config{

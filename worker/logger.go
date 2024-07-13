@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/rs/zerolog"
@@ -14,6 +15,10 @@ func NewLogger() *Logger {
 }
 func (logger *Logger) Print(level zerolog.Level, args ...interface{}) {
 	log.WithLevel(level).Msgf(fmt.Sprint(args...))
+}
+
+func (logger *Logger) Printf(ctx context.Context, format string, v ...interface{}) {
+	log.WithLevel(zerolog.DebugLevel).Msgf(format, v...)
 }
 
 // Debug logs a message at Debug level.
